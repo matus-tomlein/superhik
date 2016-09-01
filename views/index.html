@@ -8,29 +8,33 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/spectre.css/0.1.23/spectre.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" />
   </head>
   <body>
-    <header>
-      <h1 id="title">
-        Superhik
-      </h1>
-    </header>
+    <section class="section bg-grey">
+      <section id="overview" class="grid-hero container grid-960">
+        <header class="text-center">
+          <h1>
+            <i class="fa fa-beer" aria-hidden="true"></i>
+            Wall of Fame / Shame
+          </h1>
+        </header>
 
-    <main>
-      <span id="image">
-        <img src="https://cdn.hyperdev.com/us-east-1%3A9cef1fc3-379d-4e93-b87f-a1ea03317562%2Fsuperhik.jpg">
-      </span>
-      <p>
-        Value:
-        <b><span id="readings"></span></b>
-      </p>
-    </main>
+        <section>
+          <div id="content">
+          </div>
+        </section>
+      </section>
+    </section>
 
     <!-- Your web-app is https, so your scripts need to be too -->
     <script src="https://code.jquery.com/jquery-2.2.1.min.js"
             integrity="sha256-gvQgAFzTH6trSrAWoH1iPo9Xc96QxSZ3feW6kem+O00="
             crossorigin="anonymous"></script>
-    <script src="/client.js"></script>
-
+    <script src="https://npmcdn.com/react@15.3.1/dist/react.min.js"></script>
+    <script src="https://npmcdn.com/react-dom@15.3.1/dist/react-dom.min.js"></script>
+    <script src="https://npmcdn.com/babel-core@5.8.38/browser.min.js"></script>
+    <script type="text/babel" src="/client.js"></script>
   </body>
 </html>

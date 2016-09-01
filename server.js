@@ -1,13 +1,39 @@
 var express = require('express');
 var app = express();
 var http = require('http');
+var _ = require('underscore');
+
+var readings = [
+  { user: 'Matus', value: 2 },
+  { user: 'Matus', value: 4 },
+  { user: 'Nikola', value: 7 },
+  { user: 'Nikola', value: 9 },
+  { user: 'Srdjan', value: 1 },
+  { user: 'Srdjan', value: 0 },
+  { user: 'Srdjan', value: 7 },
+  { user: 'Srdjan', value: 5 },
+  { user: 'Ana', value: 1 },
+  { user: 'Ana', value: 0.5 },
+  { user: 'Irena', value: 1 },
+  { user: 'Irena', value: 3 }
+];
+var processed = [];
 
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static('public'));
 
 // http://expressjs.com/en/starter/basic-routing.html
-app.get("/", function (request, response) {
+app.get('/', function (request, response) {
   response.sendFile(__dirname + '/views/index.html');
+});
+
+app.get('/read', function (request, response) {
+  response.send(processed);
+});
+
+// listen for requests :)
+var listener = app.listen(8888, function () {
+  console.log('Your app is listening on port ' + listener.address().port);
 });
 
 function getReadings(callback) {
@@ -22,42 +48,80 @@ function getReadings(callback) {
   };
 
   var responded = function (data) {
-    var allItems = [];
-    
     var response = data.contextResponses[data.contextResponses.length - 1];
-    var items = response.contextElement.attributes.filter(function (element) {
+    var values = response.contextElement.attributes.filter(function (element) {
       return element.name == 'Atmospheric_airParticles';
     });
-    
-    var item = items[items.length - 1];
-    
-    callback(item.value);
-  }
+    var owners = response.contextElement.attributes.filter(function (element) {
+      return element.name == 'Owner';
+    });
+
+    var value = values[values.length - 1].value;
+    var owner = owners[owners.length - 1].value;
+
+    callback({
+      value: value,
+      user: owner
+    });
+  };
 
   http.request(options, function(response) {
     var str = '';
-    
+
     response.on('data', function (chunk) {
       str += chunk;
     });
-  
+
     response.on('end', function () {
       responded(JSON.parse(str));
     });
   }).end();
 }
 
-app.get("/read", function (request, response) {
-  getReadings(function (reading) {
-    response.send(reading);
+function planUpdate() {
+  setTimeout(function () {
+    getReadings(function (data) {
+      planUpdate();
+
+      if (readings.length && JSON.stringify(data) == JSON.stringify(readings[readings.length - 1]))
+        return;
+
+      readings.push(data);
+      processReadings();
+    });
+  }, 1000);
+}
+
+function processReadings() {
+  var items = [];
+
+  var users = _.uniq(readings.map(function (r) { return r.user; }));
+  users.forEach(function (user) {
+    var userReadings = readings.filter(function (r) { return r.user == user; });
+
+    var last = userReadings[userReadings.length - 1];
+    var sum = 0;
+    var max = 0;
+    for (var i = 0; i < userReadings.length; i++) {
+      var val = parseFloat(userReadings[i].value);
+      sum += val;
+      if (max < userReadings[i].value) max = val;
+    }
+    var avg = sum / userReadings.length;
+
+    items.push({
+      user: user,
+      value: last.value,
+      count: userReadings.length,
+      average: Math.round(avg * 100) / 100,
+      maximum: max
+    });
   });
-});
 
-// listen for requests :)
-var listener = app.listen(process.env.PORT, function () {
-  console.log('Your app is listening on port ' + listener.address().port);
-});
+  processed = items;
+}
 
+planUpdate();
 
 /*
 
