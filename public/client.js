@@ -9,7 +9,19 @@
 $(function() {
   
   $.get('/read', function(reading) {
-    $('<b></b>').text(reading).appendTo('#readings');
+    var threshold = 100;
+    
+    $('#readings').text(reading);
+    
+    if (reading < threshold) {
+      $('#title').text('OK!');
+      $('#image').html('<img src="https://cdn.hyperdev.com/us-east-1%3A9cef1fc3-379d-4e93-b87f-a1ea03317562%2Fpolice-thumbs-up.jpg">');
+    }
+    
+    else {
+      $('#title').text('Drunk!');
+      $('#image').html('<img src="https://cdn.hyperdev.com/us-east-1%3A9cef1fc3-379d-4e93-b87f-a1ea03317562%2Fsuperhik.jpg">');
+    }
   });
 
 });
