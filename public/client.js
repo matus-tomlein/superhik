@@ -32,7 +32,7 @@ $(function() {
         return (<Item {...item} i={i} />);
       });
 
-      var style = { 'font-size': 'large' };
+      var style = { 'font-size': 'x-large' };
 
       return (
         <div className="container">
@@ -45,12 +45,12 @@ $(function() {
                       <i className="fa fa-users" aria-hidden="true"></i>
                     </th>
                     <th>
-                      Name
+                      &nbsp;
                     </th>
                     <th>Checks</th>
                     <th>Maximum</th>
                     <th>Average</th>
-                    <th>Last test</th>
+                    <th>Last</th>
                   </tr>
                 </thead>
                 <tbody>
