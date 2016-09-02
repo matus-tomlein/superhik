@@ -39,7 +39,7 @@ var listener = app.listen(8899, function () {
 function getReadings(callback) {
   var options = {
     headers: {
-      'Community-Token': '00d0e06d10bb4b39a7a29e2fce4700ae',
+      'Community-Token': '2d7b02b6c4254199b459d7ed944e0f4b',
       'Accept': 'application/json'
     },
     host: 'platform.sociotal.eu',
@@ -48,6 +48,11 @@ function getReadings(callback) {
   };
 
   var responded = function (data) {
+    if (!data.contextResponses) {
+      callback(null);
+      return;
+    }
+
     var response = data.contextResponses[data.contextResponses.length - 1];
     var values = response.contextElement.attributes.filter(function (element) {
       return element.name == 'Atmospheric_airParticles';
@@ -82,6 +87,7 @@ function planUpdate() {
   setTimeout(function () {
     getReadings(function (data) {
       planUpdate();
+      if (!data) return;
 
       if (readings.length && JSON.stringify(data) == JSON.stringify(readings[readings.length - 1]))
         return;
@@ -121,6 +127,7 @@ function processReadings() {
   processed = items;
 }
 
+processReadings();
 planUpdate();
 
 /*
